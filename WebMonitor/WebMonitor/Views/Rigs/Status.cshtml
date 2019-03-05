@@ -1,0 +1,108 @@
+﻿@model RigStatus
+@{
+    ViewData["Title"] = "Status";
+    var rig = Model;
+}
+
+<h3>Rig <mark>@Model.IP.ToString()</mark></h3>
+@if(ViewBag?.WasNotAbleToConnect == true)
+{
+<p class="lead text-warning">We were NOT ABLE TO CONNECT to this rig. Showing last known state from @rig.LastComm.ToShortTimeString().</p>
+}
+else
+{
+<p class="lead">This is status info for <mark>@Model.RigName</mark> (@Model.IP.ToString():@Model.Port) from @rig.LastComm.ToShortTimeString(), Refresh page for update. </p>
+}
+
+<div>
+    
+        <a class="btn btn-outline-primary" href="/Rigs/@Model.IP.ToString()/Connection" role="button"><i> Set Primary Connection</i></a>
+    
+
+    
+        <a class="btn btn-outline-primary" href="/Rigs/@Model.IP.ToString()/Config" role="button"><i> See and Edit Config</i></a>
+    
+
+    @*<a class="btn" href="Connection">Set Primary Connection</a>
+    <a class="btn" href="Config">Set Primary Connection</a>*@
+</div>
+
+@*Uptime: @($"{rig.Uptime.Days}d {rig.Uptime.Hours}h {rig.Uptime.Minutes}m")</td>*@
+
+<b>Connection</b><br />
+<table class="table table-borderless table-sm">
+    <tr>
+        <td width="100px" class="text-right text-muted">Connection:</td>
+        <td>@Model.Status.ConnectionAddress</td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Status:</td>
+        <td><span class="badge badge-@(Model.Status.ConnectionStatus.ToLower() == "connected" ? "success" : "danger")">@Model.Status.ConnectionStatus</span></td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Last Job:</td>
+        <td>@Model.Status.LastJob</td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Last Share:</td>
+        <td>@Model.Status.LastShare</td>
+    </tr>
+</table>
+
+
+<b>Shares</b><br />
+
+<table class="table table-borderless table-sm">
+    <tr>
+        <td width="100px" class="text-right text-muted">Found:</td>
+        <td>@Model.Status.Shares.Found</td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Submitted:</td>
+        <td>@Model.Status.Shares.Submitted</td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Accepted:</td>
+        <td>@Model.Status.Shares.Accepted</td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Too Late:</td>
+        <td>@Model.Status.Shares.TooLate</td>
+    </tr>
+    <tr>
+        <td width="100px" class="text-right text-muted">Not Valid:</td>
+        <td>@Model.Status.Shares.FailedToValidate</td>
+    </tr>
+</table>
+
+<b> Workers</b>
+<br />
+<table class="table table-sm">
+
+    <thead>
+        <tr>
+            <td>ID</td>
+            <td>GPU</td>
+            <td>STATUS</td>
+            <td>GRAPHRATE</td>
+            <td>FIDELITY</td>
+            <td>SOLUTIONS</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var worker in Model.Status.Workers)
+        {
+
+            <tr>
+                <td>@worker.ID</td>
+                <td>@worker.GPUName</td>
+                <td><span class="badge badge-@(worker.Status.ToLower() == "online" ? "success" : "danger")">@worker.Status</span></td>
+                <td>@worker.GraphsPerSecond.ToString("F2") gps</td>
+                <td>@worker.Fidelity.ToString("F3")</td>
+                <td>@worker.TotalSols</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

@@ -1,0 +1,106 @@
+﻿
+@{
+    ViewData["Title"] = "Rigs - GrinProMiner";
+    List<RigViewModel> rigs = ViewBag.Rigs;
+
+    bool showNotAdded = false;
+    List<string> notAdded = new List<string>();
+    if (ViewBag.MessageNotAdded != null && ViewBag.MessageNotAdded != "")
+    {
+        
+    }
+
+    bool ShowHowAdd = !showNotAdded && ViewBag.Added == null;
+}
+
+@section Head
+    {
+    <link rel="stylesheet" type="text/css" href="~/lib/DataTables/datatables.css">
+}
+
+@section Scripts
+    {
+    <script type="text/javascript" charset="utf8" src="~/lib/DataTables/datatables.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#rigsTable').DataTable();
+        });
+    </script>
+}
+<h2>Rigs Online Status</h2>
+
+<div class="card"><div class="card-body">Status at @DateTime.Now.ToShortTimeString(), refresh page for update</div></div>
+<br />
+
+@if (true)
+{
+    <div class="card card-body">
+        You can add rigs by configuring Remote Dasboard in config.xml of each rig, it will then push data automatically.
+        <br /> Alternatively you can add rigs from this dashboard by <a href="/rigs/add">adding their IP addresses.</a>
+    </div>
+    <br />
+}
+
+@if (ViewBag.Added != null)
+{
+    <div class="card card-body bg-info">
+        Successfully added @ViewBag.Added rigs!
+    </div>
+    <br />
+}
+
+
+@if(ViewBag.MessageNotAdded != null && ViewBag.MessageNotAdded != "")
+{
+    <div class="card card-body bg-danger">
+        Could not add these rigs:
+        <div>@ViewBag.MessageNotAdded</div>
+        
+    </div>
+    <br />
+}
+
+<br /><br />
+<div class="container body-content">
+    <table id="rigsTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Name</th>
+                <th>Status</th>
+                @*<th>Uptime</th>*@
+                <th>Shares</th>
+                <th>Last Comm</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var rig in rigs)
+            {
+                <tr>
+                    <td>@rig.Address</td>
+                    <td>@rig.Description</td>
+                    <td><span class="badge badge-@(rig.GetAllONLINE ? "success" : "danger")">@rig.GetOneLineStatus()</span></td>
+                    @*<td>@($"{rig.Uptime.Days}d {rig.Uptime.Hours}h {rig.Uptime.Minutes}m")</td>*@
+                    <td>@rig.Shares.Found / @rig.Shares.Accepted / @(rig.Shares.TooLate + @rig.Shares.FailedToValidate)</td>
+                    <td>@rig.LastCommunication.ToString()</td>
+                    <td>
+                        <a href="/Rigs/@rig.Address" class="btn btn-default" role="button">Show Details</a>|
+                        @*<a href="#" class="btn btn-default" role="button" target="_blank">Restart</a> -*@
+                        <a href="/Rigs/@rig.Address/Config" class="btn btn-default" role="button" target="_blank">Config</a> |
+                        <a href="/Rigs/@rig.Address/remove" class="btn small" title="Remove" role="button">X</a>
+                        @*<a href="#" class="btn btn-default" role="button" target="_blank">Update</a> -*@
+                        @*<a href="#" class="btn btn-default" role="button" target="_blank">Update</a>*@
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+

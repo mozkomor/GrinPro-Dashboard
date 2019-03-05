@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\ProMiner\GrinProMInerAPI\Models\Status.cs" Link="Models\Status.cs" />
+    <Compile Include="..\..\ProMiner\Master\Config.cs" Link="Models\Config.cs" />
+    <Compile Include="..\..\ProMiner\Master\Logging.cs" Link="Models\Logging.cs" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\DataTables\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ProMiner\SharedSerialization\SharedSerialization.csproj" />
+  </ItemGroup>
+
+</Project>

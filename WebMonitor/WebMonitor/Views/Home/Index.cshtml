@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Dashboard GrinProMiner";
+}
+
+<div class="text-center">
+    <h2>Status</h2>
+</div>
+
+<div class="row justify-content-center">
+    @*<div class="col-md-4">
+        <h3>Stratum Connection</h3>
+        <div>
+            Connected to <mark>mgwinpool.com:3333</mark> <br />
+            Shares: 2358 accepted, 3 rejected, 12 stales<br />
+            Last submitted 16s ago<br />
+            Last job received 58s ago<br />
+            <a href="#">..set connection(s)</a>
+        </div>
+    </div>*@
+
+    <div class="col-md-4">
+        <h3>Rigs and Workers</h3>
+        <div>
+            Rigs: <mark>@APIComm.Rigs.Count()</mark> total <br />
+            Rigs: <mark>@APIComm.Rigs.Where(r => r.Value.Status.ConnectionStatus == "Connected").Count()</mark> connected <br />
+            Total workers (GPUs): <mark>@APIComm.Rigs.SelectMany(x => x.Value.Status.Workers).Count()</mark><br />
+            Online (mining) workers: <mark>@APIComm.Rigs.SelectMany(x => x.Value.Status.Workers).Where(w => w.Status.ToLower() == "online").Count()</mark> online<br />
+            GPS (Graphs per second) total: <mark>@APIComm.Rigs.SelectMany(x => x.Value.Status.Workers).Where(w => w.Status.ToLower() == "online").Select(w => w.GraphsPerSecond).Sum().ToString("F2")</mark> <br />
+            <a class="" asp-area="" asp-controller="Rigs" asp-action="Index">..more details</a>
+        </div>
+    </div>
+</div>

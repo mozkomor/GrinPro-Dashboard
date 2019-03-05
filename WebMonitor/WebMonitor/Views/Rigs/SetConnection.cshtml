@@ -1,0 +1,85 @@
+﻿@using Newtonsoft.Json
+@model Mozkomor.GrinGoldMiner.Connection
+@{
+    ViewData["Title"] = $"Primary Connection {ViewBag.Address}";
+}
+@section Head
+    {
+    <link href="~/lib/json-editor/dist/jsoneditor.css" rel="stylesheet" type="text/css">
+    <script src="~/lib/json-editor/dist/jsoneditor.js"></script>
+    <link href="~/lib/json-editor/css/darktheme.css" rel="stylesheet" type="text/css">
+}
+
+<h3>Primary Connection <mark><a href="/Rigs/@ViewBag.Address">@ViewBag.Address</a></mark></h3>
+
+<div id="showSucc" class="card card-body d-none bg-success">
+    Primary connection was activatedd on rig. You can check it on <a href="http://@ViewBag.Address/api/connections/active">http://@ViewBag.Address/api/connections/active</a>
+</div>
+
+<div id="showErr" class="card card-body d-none bg-danger">
+    Error, miner connection not changed.
+</div>
+
+<p>
+    You can edit the stratum primary connection details and push them to miner. Miner will reconnect to this new connection and start mining there.
+    <br />
+    Just edit the values below and press the "Set Connection" button.
+
+    <br /><br />
+          <small>(Note that the value displayed below is not necesarily current active connection, but rather it is value of "PrimaryConnection" from config. Current active connection might have been changed since miner was started. You can check active connection on rig status page.)</small>
+</p>
+
+<div>
+    <div id="btn-Send" class="btn btn-outline-primary" role="button"><i class="fa fa-send"> Set Connection</i></div>
+</div>
+
+<br />
+
+<div id="jsoneditor"></div>
+
+@section Scripts
+    {
+    <script>
+        var container = document.getElementById('jsoneditor');
+
+        var options = {
+            mode: 'form',
+            mainMenuBar: false,
+            navigationBar: false,
+            statusBar: false,
+            name: "connection",
+
+            onError: function (err) {
+                alert(err.toString());
+            },
+            onModeChange: function (newMode, oldMode) {
+                console.log('Mode switched from', oldMode, 'to', newMode);
+            }
+        };
+
+        var json = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+        var editor = new JSONEditor(container, options, json);
+
+        editor.expandAll();
+
+        $('#btn-Send').on('click', function () {
+            $("#showErr").addClass("d-none");
+            $("#showSucc").addClass("d-none");
+
+            var payloadData = editor.get();
+
+            $.post({
+                url: "/Rigs/@ViewBag.Address/Connection",
+                data: { connection : payloadData },
+                dataType: "json",
+                success: function () {
+                    $("#showSucc").removeClass("d-none");
+                },
+                error: function () {
+                    $("#showErr").removeClass("d-none");
+                }
+            });
+        })
+    </script>
+}

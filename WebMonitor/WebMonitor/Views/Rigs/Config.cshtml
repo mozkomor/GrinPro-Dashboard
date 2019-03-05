@@ -1,0 +1,94 @@
+﻿@using Newtonsoft.Json
+@{
+    ViewData["Title"] = $"Config {ViewBag.Address}";
+}
+
+@section Head
+    {
+    <link href="~/lib/json-editor/dist/jsoneditor.css" rel="stylesheet" type="text/css">
+    <script src="~/lib/json-editor/dist/jsoneditor.js"></script>
+    <link href="~/lib/json-editor/css/darktheme.css" rel="stylesheet" type="text/css">
+}
+
+<h3>Config <mark>@ViewBag.Address</mark></h3>
+
+<div id="showSucc" class="card card-body d-none bg-success">
+    Config.xml was saved to file in rig and will take effect next time miner is started.
+</div>
+
+<div id="showErr" class="card card-body d-none bg-danger">
+    Error, miner config not changed.
+</div>
+
+<p>
+    This is representation of config in the miner (rig). You can edit the values and push it to miner. It will be saved to disk as config.xml and <span><u>activated next time the miner is started</u></span> (immediate "on the fly" activation not available yet)
+    <br />
+    Just edit the values below and press the "Set Config" button.
+</p>
+
+<div>
+    <div class="btn btn-outline-primary" id="btn-Send" role="button"><i class="fa fa-send"> Set Config</i></div>
+</div>
+
+<br />
+
+<div id="jsoneditor"></div>
+
+@section Scripts
+{
+<script>
+    
+
+    var container = document.getElementById('jsoneditor');
+
+    var options = {
+        mode: 'form',
+        mainMenuBar: false,
+        navigationBar: false,
+        statusBar: false,
+        name: "config",
+
+
+        onError: function (err) {
+            alert(err.toString());
+        },
+        onModeChange: function (newMode, oldMode) {
+            console.log('Mode switched from', oldMode, 'to', newMode);
+        }
+    };
+    var json=@Html.Raw(JsonConvert.SerializeObject(Model));
+   
+    var editor = new JSONEditor(container, options, json);
+
+    editor.expandAll();
+
+    $('#btn-Send').on('click', function () {
+        $("#showErr").addClass("d-none");
+        $("#showSucc").addClass("d-none");
+
+        var payloadData = editor.get();
+
+        $.post({
+            url: "/Rigs/@ViewBag.Address/config",
+            data: { config : payloadData },
+            dataType: "json",
+            success: function () {
+                $("#showSucc").removeClass("d-none");
+            },
+            error: function () {
+                $("#showErr").removeClass("d-none");
+            }
+        });
+
+        @*$.ajax({
+            url: "/Rigs/@ViewBag.Address/config",
+            data: {
+                Config: editor.get()
+            },
+            type: 'POST',
+            error: alert('error'),
+            success: alert('success')
+        });*@
+    })
+</script>
+}
